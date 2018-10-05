@@ -1,0 +1,25 @@
+{
+  "name": "ds9-local-estate",
+  "version": "0.1.0",
+  "description": "A local estate client for deepspace9 factorio mod",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MasterBabol/ds9-local-estate.git"
+  },
+  "keywords": [
+    "factorio"
+  ],
+  "author": "",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/MasterBabol/ds9-local-estate/issues"
+  },
+  "homepage": "https://github.com/MasterBabol/ds9-local-estate#readme",
+  "dependencies": {
+    "rcon-client": "^3.1.4"
+  }
+}
