@@ -4,7 +4,10 @@
   "description": "A local estate client for deepspace9 factorio mod",
   "main": "index.js",
   "scripts": {
-    "test": "npm start"
+    "dev": "nodemon --exec babel-node --presets=env ./src --watch src",
+    "build": "babel src --out-dir build --presets=env",
+    "start": "node ./build",
+    "clean": "rm -rf build"
   },
   "repository": {
     "type": "git",
@@ -20,6 +23,18 @@
   },
   "homepage": "https://github.com/MasterBabol/ds9-local-estate#readme",
   "dependencies": {
-    "rcon-client": "^3.1.4"
+    "args": "^5.0.0",
+    "decompress": "^4.2.0",
+    "decompress-targz": "^4.1.1",
+    "decompress-tarxz": "^2.1.1",
+    "get-port": "^4.0.0",
+    "rcon-client": "^3.1.4",
+    "request": "^2.88.0",
+    "validator": "^10.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4",
+    "babel-preset-env": "^1.7.0",
+    "babel-cli": "^6.26.0"
   }
 }
