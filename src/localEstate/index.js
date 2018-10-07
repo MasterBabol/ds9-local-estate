@@ -64,6 +64,11 @@ const installAnnounceAliveWorker = (leCtx) => {
     }, 20 * 1000);
 };
 
+const confirmRxReservation = (leCtx, req) {
+    const rcon = leCtx.rcon;
+    rcon.send('/confirm_rx_reservation ' + JSON.stringify(req));
+};
+
 const mainDispatchLoop = async (leCtx) => {
     if (checkShutdownCondition(leCtx))
         return cleanStopAndSaveAllWorkers(leCtx);
@@ -77,20 +82,37 @@ const mainDispatchLoop = async (leCtx) => {
                 var reqType = rxReq.type;
                 var items = rxReq.items;
                 
-                var prevReqWorkerState = leCtx.workerStates[reqId];
-                var prevReqWorker = leCtx.workers[reqId];
-                
                 switch (reqType) {
                     case RXREQTYPE_RESERVE:
+                        var commitItems = {};
                         var itemNames = Object.keys(items);
                         for (var itemName of itemNames) {
-                            if (items[itemName] <= 0)
-                                delete items[itemName];
+                            if (items[itemName] > 0)
+                                commitItems[itemName] = items[itemName] * -1; // convert to negative number (for item request)
                             else
-                                items[itemName] *= -1; // convert to negative number (for item request)
+                                delete items[itemName]; // delete invalid requests
                         }
-                        if (Object.keys(items).length > 0)
-                            ds9.inventory(leCtx.config, items);
+                        if (Object.keys(items).length > 0) {
+                            let result = await ds9.inventory(leCtx.config, commitItems);
+                             
+                            if (result.error) {
+                                console.log('[-] ds9 Api error: ' + result.error);
+                            } else {
+                                if (result.response) {
+                                    switch (result.response.statusCode) {
+                                        case 200:
+                                            confirmRxReservation(leCtx, rxReq);
+                                            break;
+                                        case 404:
+                                            break;
+                                        default:
+                                    }
+                                } else {
+                                    console.log('[-] Unexpected ds9 Api error: No response');
+                                }
+                            }
+                        }
+                            
                         break;
                     case RXREQTYPE_REVOKE:
                         // current policy: ignore
@@ -127,10 +149,9 @@ const localEstate = function(config, launcher, rcon, lowdb) {
         launcher.on('game', (msg) => { console.log(msg); });
         
         installSigintHandler(this);
-        restorePreviousWorkers(this);
         installAnnounceAliveWorker(this);
         
-        mainDispatchLoop(this);
+        setInterval(() => { mainDispatchLoop(this); }, 8000);
     };
 };
 

@@ -1,7 +1,7 @@
 import os from 'os';
 import request from 'request';
 
-const inventory = (config, items) => {
+const inventory = (config, items, callback) => {
 
     let reqOpt = {
         method: 'POST',
@@ -15,9 +15,13 @@ const inventory = (config, items) => {
         }
     };
 
-    request(reqOpt, (err, res, body) => {
-        if (err)
-            console.log(err);
+    return new Promise((resolve, reject) => {
+        request(reqOpt, (err, res) => {
+            resolve({
+                error: err,
+                response: res
+            });
+        });
     });
 };
 
