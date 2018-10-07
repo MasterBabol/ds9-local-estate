@@ -11,7 +11,7 @@ import lowDB from 'lowdb';
 import FileSync from 'lowdb/adapters/FileSync';
 
 import configOrDie from './configOrDie';
-import fman from './factorioManagement';
+import fman from './factorioProcMan';
 import localEstate from './localEstate';
 import ds9 from './ds9RemoteApi';
 
