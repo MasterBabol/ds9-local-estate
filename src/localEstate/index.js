@@ -37,18 +37,30 @@ const installSigintHandler = (config, launcher, rcon, leCtx) => {
     });
 }
 
+const RXSTATE_IDLE = 0;
+
 const rxtxRocketHandler = async (config, launcher, rcon, lowdb, leCtx) => {
     try {
         if (leCtx.shutdownState)
             return;
         let db = lowdb.read();
 
-        let prevRxReqs = db.defaults({ rx: [] }).get('previousRxReqs');
+        let prevRxStats = db.defaults({ OutstandingRxStatsx: [] })
+            .get('OutstandingRxStats');
         let rxReqs = await rcon.send('/dequeue_rx_queue');
         let rxReqsParsed = JSON.parse(rxReqs);
 
         if (rxReqsParsed instanceof Array) {
             for (var rxReq of rxReqsParsed) {
+                var prevRxStatDB = prevRxStats.find({ id: rxReq.id });
+                var prevRxStat = prevRxStatDB.value();
+                var reqType = rxReq.type;
+                if (prevRxStat) {
+                    
+                } else {
+                }
+                //rxReq.id;
+                //rxReq.items;
             }
         }
     } catch (e) {
@@ -58,7 +70,9 @@ const rxtxRocketHandler = async (config, launcher, rcon, lowdb, leCtx) => {
 };
 
 const localEstate = function(config, launcher, rcon, lowdb) {
+    this.rxDispatchers = []
     this.shutdownState = false;
+    this.shutdownStandby = false;
     this.run = async () => {
         let disableAchievements = await rcon.send('/c');
         installSigintHandler(config, launcher, rcon, this);
