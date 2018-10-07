@@ -6,15 +6,21 @@ import validator from 'validator';
 import { Rcon } from 'rcon-client';
 import args from 'args';
 import request from 'request';
+import { EventEmitter } from 'events';
+import lowDB from 'lowdb';
+import FileSync from 'lowdb/adapters/FileSync';
 
 import configOrDie from './configOrDie';
 import fman from './factorioManagement';
-import watcher from './watcher';
+import localEstate from './localEstate';
 import ds9 from './ds9RemoteApi';
 
 console.log('[!] Checking the config file..');
 const config = configOrDie();
 console.log('[+] The config file seems good.');
+
+const dbAdapter = new FileSync('db.json');
+const db = lowDB(dbAdapter);
 
 args.command(
     'fdown',
@@ -42,29 +48,43 @@ const argsFlags = args.parse(process.argv);
 
 function runLocalEstate() {
     console.log('[!] Deepspace 9 local estate is starting..');
-    const rcon = new Rcon({ packetResponseTimeout: 2000});
 
-    // Announce once now
+    // announceAlive once now; TODO: change to le annouce
     ds9.announceAlive(config);
 
-    const connectRcon = async () => {
-        await rcon.connect({
+    let launcher = new fman.launcher(config);
+    let rconDetector = new EventEmitter();
+
+    launcher.on('info', (msg) => {
+        if (msg.reason == 'RemoteCommandProcessor' &&
+            (msg.body.indexOf('Starting RCON interface') >= 0)
+        )
+            rconDetector.emit('fRCONlistening');
+    });
+
+    rconDetector.once('fRCONlistening', () => {
+        console.log('[+] Factorio server Rcon interface is ready');
+        const rcon = new Rcon({ packetResponseTimeout: 2000});
+
+        rcon.onDidConnect(() => {
+            console.log('[+] Rcon interface is now ready.');
+        });
+
+        rcon.onDidAuthenticate(() => {
+            console.log('[+] Rcon connection is successfully authenticated.');
+
+            let le = new localEstate(config, launcher, rcon, db);
+            le.run();
+        });
+
+        rcon.connect({
             host: 'localhost',
             port: config['rcon-port'],
             password: config['rcon-password']
         });
-        console.log('hello2');
-    };
+    });
 
-    connectRcon();
-
-    console.log('hello');
-    setTimeout(() => {
-
-    }, 5 * 1000);
-
-    setInterval(() => {
-        ds9.announceAlive(config);
-    }, 20 * 1000);
+    console.log('[!] Launching a factorio server instance..');
+    launcher.start();
 }
 
