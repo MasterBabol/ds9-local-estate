@@ -69,6 +69,10 @@ const confirmRxReservation = (leCtx, req) => {
     rcon.send('/confirm_rx_reservation ' + JSON.stringify(req));
 };
 
+const RXREQTYPE_RESERVE = 1;
+const RXREQTYPE_REVOKE = 2;
+const RXREQTYPE_RETURN = 3;
+
 const mainDispatchLoop = async (leCtx) => {
     if (checkShutdownCondition(leCtx))
         return cleanStopAndSaveAllWorkers(leCtx);
@@ -96,7 +100,7 @@ const mainDispatchLoop = async (leCtx) => {
                             let result = await ds9.inventory(leCtx.config, commitItems);
                              
                             if (result.error) {
-                                console.log('[-] ds9 Api error: ' + result.error);
+                                console.log('[-] ds9 Api error (res): ' + result.error);
                             } else {
                                 if (result.response) {
                                     switch (result.response.statusCode) {
@@ -108,7 +112,7 @@ const mainDispatchLoop = async (leCtx) => {
                                         default:
                                     }
                                 } else {
-                                    console.log('[-] Unexpected ds9 Api error: No response');
+                                    console.log('[-] Unexpected ds9 Api error: No resp');
                                 }
                             }
                         }
@@ -123,8 +127,20 @@ const mainDispatchLoop = async (leCtx) => {
                             if (items[itemName] <= 0)
                                 delete items[itemName];
                         }
-                        if (Object.keys(items).length > 0)
-                            ds9.inventory(leCtx.config, items);
+                        if (Object.keys(items).length > 0) {
+                            let result = await ds9.inventory(leCtx.config, items);
+
+                            if (result.error) {
+                                console.log('[-] ds9 Api error (ret): ' + result.error);
+                            } else {
+                                if (result.response) {
+                                    if (result.response.statusCode != 200) {
+                                    }
+                                } else {
+                                    console.log('[-] Unexpected ds9 Api error: No resp');
+                                }
+                            }
+                        }
                         break;
                 }
             }
@@ -145,12 +161,14 @@ const localEstate = function(config, launcher, rcon, lowdb) {
     this.shutdownReady = false;
     
     this.run = async () => {
+        console.log('[!] Preparing for main dispatcher..');
         let disableAchievements = await rcon.send('/c');
         launcher.on('game', (msg) => { console.log(msg); });
         
         installSigintHandler(this);
         installAnnounceAliveWorker(this);
-        
+    
+        console.log('[!] Starting main dispatcher..');
         setInterval(() => { mainDispatchLoop(this); }, 8000);
     };
 };
