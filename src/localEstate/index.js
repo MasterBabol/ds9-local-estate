@@ -64,7 +64,7 @@ const installAnnounceAliveWorker = (leCtx) => {
     }, 20 * 1000);
 };
 
-const confirmRxReservation = (leCtx, req) {
+const confirmRxReservation = (leCtx, req) => {
     const rcon = leCtx.rcon;
     rcon.send('/confirm_rx_reservation ' + JSON.stringify(req));
 };
