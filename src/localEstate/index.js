@@ -60,7 +60,12 @@ const cleanStopAndSaveAllWorkers = (leCtx) => {
 
 const installAnnounceAliveWorker = (leCtx) => {
     setInterval(() => {
-        ds9.announceAlive(leCtx.config);
+        ds9.announceAlive(leCtx.config).then((res) => {
+            if (res.error) {
+                console.log('[-] Cannot connect to DS9 Remote cloud: ' + res.error.code);
+                enterShutdownProcess(leCtx);
+            }
+        });
     }, 20 * 1000);
 };
 
@@ -188,6 +193,20 @@ const mainDispatchLoop = async (leCtx) => {
     }
 };
 
+const printFactorioLog = (msg) => {
+    let type = '!';
+    if (msg.type == 'game') {
+        type = 'g';
+    } else if (msg.type == 'info') {
+        type = 'i';
+    } else if (msg.type == 'gameuncat') {
+        type = 'u';
+    } else if (msg.type == 'norm') {
+        type = 'n';
+    }
+    console.log('[' + type + '] [' + msg.reason + '] ' + msg.body);
+};
+
 const localEstate = function(config, launcher, rcon, lowdb) {    
     this.config = config;
     this.launcher = launcher;
@@ -200,7 +219,7 @@ const localEstate = function(config, launcher, rcon, lowdb) {
     this.run = async () => {
         console.log('[!] Preparing for main dispatcher..');
         let disableAchievements = await rcon.send('/c');
-        launcher.on('game', (msg) => { console.log(msg); });
+        launcher.on('game', printFactorioLog);
         
         installSigintHandler(this);
         installAnnounceAliveWorker(this);

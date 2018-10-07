@@ -20,9 +20,14 @@ const announceAlive = (config) => {
         }
     };
 
-    request(reqOpt, (err, res, body) => {
-        if (err)
-            console.log(err);
+    return new Promise((resolve, reject) => {
+        request(reqOpt, (err, res, body) => {
+            resolve({
+                error: err,
+                response: res,
+                body: body
+            });
+        });
     });
 };
 

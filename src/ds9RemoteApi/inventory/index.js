@@ -19,7 +19,8 @@ const inventory = (config, items, callback) => {
         request(reqOpt, (err, res) => {
             resolve({
                 error: err,
-                response: res
+                response: res,
+                body: body
             });
         });
     });
