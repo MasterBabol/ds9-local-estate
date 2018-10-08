@@ -3,7 +3,7 @@ import ds9 from '../ds9RemoteApi';
 const factorioSafeExit = async (leCtx) => {
     try {
         let resp = false;
-        console.log('[!] Attempting to same the game..');
+        console.log('[!] Attempting to save the game..');
         leCtx.launcher.on('all', (msg) => {
             console.log('[!] ' + msg.body);
             if (msg.body.indexOf('Saving game as') >= 0) {
@@ -30,19 +30,23 @@ const factorioSafeExit = async (leCtx) => {
 };
 
 const enterShutdownProcess = (leCtx) => {
-    console.log('[!] Received SIGINT. Waiting other workers before the shutdown..');
+    console.log('[!] Waiting other workers before the shutdown..');
     leCtx.shutdownState = true;
     let exitWatchdog = setInterval(() => {
         if (leCtx.shutdownReady) {
             console.log('[+] All workers stopped for the shutdown.');
             clearInterval(exitWatchdog);
             factorioSafeExit(leCtx);
+        } else {
+            console.log('[!] Still waiting..');
         }
-    }, 5 * 1000);
+    }, 3 * 1000);
 };
 
 const installSigintHandler = (leCtx) => {
     process.once('SIGINT', () => {
+        process.on('SIGINT', () => {});
+        console.log('\n[!] Received SIGINT. Entering shutdown state..');
         enterShutdownProcess(leCtx);
     });
 };
