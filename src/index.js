@@ -23,13 +23,13 @@ const dbAdapter = new FileSync('db.json');
 const db = lowDB(dbAdapter);
 
 args.command(
-    'fdown',
+    'download',
     'Download a factorio headless server.',
     (n, s, o) => { fman.download(n, s, o, config) }
 );
 
 args.command(
-    'fdeploy',
+    'deploy',
     'Deploy a factorio game server with map initialization.',
     (n, s, o) => { fman.deploy(n, s, o, config) }
 );
