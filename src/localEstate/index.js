@@ -21,7 +21,7 @@ const factorioSafeExit = async (leCtx) => {
                 leCtx.launcher.proc.kill('SIGINT');
                 process.exit(0);
             }
-        }, 5000);
+        }, 10000);
     } catch (e) {
         console.log(e);
         process.exit(-1);

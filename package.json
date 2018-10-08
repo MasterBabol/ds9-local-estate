@@ -2,7 +2,7 @@
   "name": "ds9-local-estate",
   "version": "0.1.0",
   "description": "A local estate client for deepspace9 factorio mod",
-  "main": "index.js",
+  "main": "./build/index.js",
   "scripts": {
     "dev": "nodemon --exec babel-node --presets=env ./src --watch src",
     "build": "babel src --out-dir build --presets=env",
