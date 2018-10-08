@@ -1,3 +1,4 @@
+import poly from 'babel-polyfill';
 import fs from 'fs';
 import decomp from 'decompress';
 import decompTarxz from 'decompress-tarxz';

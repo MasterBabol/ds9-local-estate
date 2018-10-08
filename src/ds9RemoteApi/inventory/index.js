@@ -16,7 +16,7 @@ const inventory = (config, items, callback) => {
     };
 
     return new Promise((resolve, reject) => {
-        request(reqOpt, (err, res) => {
+        request(reqOpt, (err, res, body) => {
             resolve({
                 error: err,
                 response: res,

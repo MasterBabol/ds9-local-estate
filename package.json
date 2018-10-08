@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon --exec babel-node --presets=env ./src --watch src",
     "build": "babel src --out-dir build --presets=env",
-    "start": "node ./build",
+    "start": "node ./build start",
+    "download": "node ./build download",
+    "deploy": "node ./build deploy",
     "clean": "rm -rf build"
   },
   "repository": {
@@ -24,6 +26,7 @@
   "homepage": "https://github.com/MasterBabol/ds9-local-estate#readme",
   "dependencies": {
     "args": "^5.0.0",
+    "babel-polyfill": "^6.26.0",
     "decompress": "^4.2.0",
     "decompress-targz": "^4.1.1",
     "decompress-tarxz": "^2.1.1",
