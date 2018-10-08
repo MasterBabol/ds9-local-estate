@@ -45,6 +45,10 @@ args.option(
     'force', 'force your decision', false
 );
 
+args.option(
+    'modonly', 'deploy mod files only (with deploy command)', false
+);
+
 const argsFlags = args.parse(process.argv);
 
 function runLocalEstate() {

@@ -78,32 +78,39 @@ const deploy = (name, sub, options, config) => {
         try {
             fs.mkdirSync('./factorio/inst');
         } catch (e) {}
-        let copy = cproc.spawnSync(
-            'cp', ['-Rf','./deploy_pack/.','./factorio/inst/']
-        );
-        console.log('[+] Deploy pack files are successfully copied.');
 
-        console.log('[!] Launching a factorio headless server..');
-        let factorio = cproc.spawnSync(
-            './factorio/bin/x64/factorio', [
-                '-c', './factorio/inst/config/config.ini',
-                '--create',
-                './factorio/inst/saves/manualsave.zip',
-                '--map-gen-settings',
-                './factorio/inst/config/map-gen-settings.json',
-                '--map-settings',
-                './factorio/inst/config/map-settings.json',
-            ]
-        );
-        let mapCreateResponse = factorio.stdout.toString();
-        let errorDetectRegex = /Error\s+(.*)/g;
-        let detectedError = mapCreateResponse.match(errorDetectRegex);
-        if (detectedError)
-            for (var err of detectedError)
-                console.log('[-] Factorio ' + err);
-        else
-            console.log('[+] A factorio instance is now ready.');
+        if (options.modonly) {
+            let copy = cproc.spawnSync(
+                'cp', ['-Rf','./deploy_pack/mods.','./factorio/inst/mods']
+            );
+            console.log('[+] Mod files are successfully copied.');
+        } else {
+            let copy = cproc.spawnSync(
+                'cp', ['-Rf','./deploy_pack/.','./factorio/inst/']
+            );
+            console.log('[+] Deploy pack files are successfully copied.');
 
+            console.log('[!] Launching a factorio headless server..');
+            let factorio = cproc.spawnSync(
+                './factorio/bin/x64/factorio', [
+                    '-c', './factorio/inst/config/config.ini',
+                    '--create',
+                    './factorio/inst/saves/manualsave.zip',
+                    '--map-gen-settings',
+                    './factorio/inst/config/map-gen-settings.json',
+                    '--map-settings',
+                    './factorio/inst/config/map-settings.json',
+                ]
+            );
+            let mapCreateResponse = factorio.stdout.toString();
+            let errorDetectRegex = /Error\s+(.*)/g;
+            let detectedError = mapCreateResponse.match(errorDetectRegex);
+            if (detectedError)
+                for (var err of detectedError)
+                    console.log('[-] Factorio ' + err);
+            else
+                console.log('[+] A factorio instance is now ready.');
+        }
     } else {
         console.log('[-] Any factorio directory is not found.');
     }
