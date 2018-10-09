@@ -229,14 +229,60 @@ const dispatchTxSignals = async (leCtx) => {
     ds9.signal.put(leCtx.config, txSignalsQuery);
 };
 
+const dispatchResearchAnnounces = async (leCtx) => {
+    let curTechs = await leCtx.rcon.send('/collect_technology_researches');
+    let curTechsParsed = JSON.parse(curTechs);
+    let techQuery = {};
+
+    if (curTechsParsed instanceof Array) {
+        for (var techKey of Object.keys(curTechsParsed)) {
+            var tech = curTechsParsed[techKey];
+            techQuery[tech.name] = {
+                researched: tech.researched,
+                level: tech.level
+            };
+
+            ds9.technology.put(leCtx.config, techQuery);
+        }
+    }
+}
+
+const dispatchResearchUpdates = async (leCtx) => {
+    let res = await ds9.technology.get(leCtx.config);
+    if (res.error) {
+        console.log('[-] ds9 Api error (tech ret): ' + res.error);
+    } else {
+        if (res.response) {
+            let techUpdateQuery = [];
+            let teches = JSON.parse(res.body);
+            for (var techKey of Object.keys(teches)) {
+                var curTech = teches[techKey];
+                techUpdateQuery.push({
+                    name: techKey,
+                    researched: curTech.researched,
+                    level: curTech.level
+                });
+            }
+            leCtx.rcon.send('/set_technologies ' + JSON.stringify(techUpdateQuery));
+        } else {
+            console.log('[-] Unexpected ds9 Api error: No resp');
+        }
+    }
+}
+
 const mainDispatchLoop = async (leCtx) => {
     if (checkShutdownCondition(leCtx))
         return cleanStopAndSaveAllWorkers(leCtx);
     try {
+        leCtx.dispatchPeriodIdx++;
         dispatchRxqueue(leCtx);
         dispatchTxqueue(leCtx);
         dispatchRxSignals(leCtx);
         dispatchTxSignals(leCtx);
+        if (leCtx.dispatchPeriodIdx % 15) {
+            dispatchResearchAnnounces(leCtx);
+            dispatchResearchUpdates(leCtx);
+        }
     } catch (e) {
         console.log('[-] Unexpected error occured: ' + e);
         process.kill(process.pid, 'SIGINT');
@@ -265,17 +311,19 @@ const localEstate = function(config, launcher, rcon, lowdb) {
     
     this.shutdownState = false;
     this.shutdownReady = false;
+    this.dispatchPeriodIdx = 0;
     
     this.run = async () => {
         console.log('[!] Preparing for main dispatcher..');
         let disableAchievements = await rcon.send('/c');
-        launcher.on('all', printFactorioLog);
+        launcher.on('game', printFactorioLog);
+        launcher.on('norm', printFactorioLog);
         
         installSigintHandler(this);
         installAnnounceAliveWorker(this);
     
         console.log('[!] Starting main dispatcher..');
-        setInterval(() => { mainDispatchLoop(this); }, 2000);
+        setInterval(() => { mainDispatchLoop(this); }, 1000);
     };
 };
 
