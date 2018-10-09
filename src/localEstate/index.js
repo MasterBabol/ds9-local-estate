@@ -137,7 +137,7 @@ const dispatchRxqueue = async (leCtx) => {
                         let result = await ds9.inventory(leCtx.config, items);
 
                         if (result.error) {
-                            console.log('[-] ds9 Api error (ret): ' + result.error);
+                            console.log('[-] ds9 Api error (rxq ret): ' + result.error);
                         } else {
                             if (result.response) {
                                 if (result.response.statusCode != 200) {
@@ -151,7 +151,7 @@ const dispatchRxqueue = async (leCtx) => {
             }
         }
     }
-}
+};
 
 const dispatchTxqueue = async (leCtx) => {
     let txReqs = await leCtx.rcon.send('/dequeue_tx_queue');
@@ -171,7 +171,7 @@ const dispatchTxqueue = async (leCtx) => {
                 let result = await ds9.inventory(leCtx.config, items);
 
                 if (result.error) {
-                    console.log('[-] ds9 Api error (ret): ' + result.error);
+                    console.log('[-] ds9 Api error (txq ret): ' + result.error);
                 } else {
                     if (result.response) {
                         if (result.response.statusCode != 200) {
@@ -183,7 +183,51 @@ const dispatchTxqueue = async (leCtx) => {
             }
         }
     }
-}
+};
+
+const dispatchRxSignals = async (leCtx) => {
+    let rxSignalReqs = await leCtx.rcon.send('/collect_rx_signal_reqs');
+    let rxSigReqsParsed = JSON.parse(rxSignalReqs);
+
+    if (rxSigReqsParsed instanceof Array) {
+        let rxQueryRes = await ds9.signal.get(leCtx.config);
+        if (rxQueryRes.error) {
+            console.log('[-] ds9 Api error (rxs ret): ' + result.error);
+        } else {
+            if (rxQueryRes.response) {
+                if (rxQueryRes.response.statusCode == 200) {
+                    let sigList = JSON.parse(rxQueryRes.body);
+                    for (var rxSigKey of Object.keys(rxSigReqsParsed)) {
+                        if (sigList[rxSigReqsParsed[rxSigKey].name] != undefined) {
+                            rxSigReqsParsed[rxSigKey].count =
+                                sigList[rxSigReqsParsed[rxSigKey].name];
+                        } else
+                            rxSigReqsParsed[rxSigKey].count = 0;
+                    }
+                    if (Object.keys(rxSigReqsParsed).length > 0)
+                        leCtx.rcon.send('/set_rx_signals ' + JSON.stringify(rxSigReqsParsed));
+                }
+            } else {
+                console.log('[-] Unexpected ds9 Api error: No resp');
+            }
+        }
+    }
+};
+
+const dispatchTxSignals = async (leCtx) => {
+    let txSignals = await leCtx.rcon.send('/collect_tx_signals');
+    let txSignalsParsed = JSON.parse(txSignals);
+    let txSignalsQuery = {};
+
+    if (txSignalsParsed instanceof Array) {
+        for (var txSigKey of Object.keys(txSignalsParsed)) {
+            var txSig = txSignalsParsed[txSigKey];
+            txSignalsQuery[txSig.name] = txSig.count;
+        }
+    }
+
+    ds9.signal.put(leCtx.config, txSignalsQuery);
+};
 
 const mainDispatchLoop = async (leCtx) => {
     if (checkShutdownCondition(leCtx))
@@ -191,6 +235,8 @@ const mainDispatchLoop = async (leCtx) => {
     try {
         dispatchRxqueue(leCtx);
         dispatchTxqueue(leCtx);
+        dispatchRxSignals(leCtx);
+        dispatchTxSignals(leCtx);
     } catch (e) {
         console.log('[-] Unexpected error occured: ' + e);
         process.kill(process.pid, 'SIGINT');
@@ -223,13 +269,13 @@ const localEstate = function(config, launcher, rcon, lowdb) {
     this.run = async () => {
         console.log('[!] Preparing for main dispatcher..');
         let disableAchievements = await rcon.send('/c');
-        launcher.on('game', printFactorioLog);
+        launcher.on('all', printFactorioLog);
         
         installSigintHandler(this);
         installAnnounceAliveWorker(this);
     
         console.log('[!] Starting main dispatcher..');
-        setInterval(() => { mainDispatchLoop(this); }, 8000);
+        setInterval(() => { mainDispatchLoop(this); }, 2000);
     };
 };
 

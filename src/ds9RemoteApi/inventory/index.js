@@ -1,7 +1,7 @@
 import os from 'os';
 import request from 'request';
 
-const inventory = (config, items, callback) => {
+const inventory = (config, items) => {
 
     let reqOpt = {
         method: 'POST',

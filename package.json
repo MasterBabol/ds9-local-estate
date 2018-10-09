@@ -9,6 +9,7 @@
     "start": "node ./build start",
     "download": "node ./build download",
     "deploy": "node ./build deploy",
+    "depmods": "node ./build deploy --modonly",
     "clean": "rm -rf build"
   },
   "repository": {
