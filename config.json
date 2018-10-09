@@ -4,5 +4,6 @@
     "accessToken": "le0Secret",
     "game-version": "0.16.51",
     "rcon-port": 34198,
-    "rcon-password": "rconpass"
+    "rcon-password": "rconpass",
+    "techsync-period": 15
 }

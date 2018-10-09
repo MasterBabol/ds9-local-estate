@@ -279,7 +279,7 @@ const mainDispatchLoop = async (leCtx) => {
         dispatchTxqueue(leCtx);
         dispatchRxSignals(leCtx);
         dispatchTxSignals(leCtx);
-        if (leCtx.dispatchPeriodIdx % 15) {
+        if ((leCtx.dispatchPeriodIdx % leCtx.config['techsync-period']) == 0) {
             dispatchResearchAnnounces(leCtx);
             dispatchResearchUpdates(leCtx);
         }
