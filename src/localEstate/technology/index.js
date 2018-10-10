@@ -16,6 +16,8 @@ const dispatchResearchAnnounces = async (leCtx) => {
             ds9.technology.put(leCtx.config, techQuery);
         }
     }
+
+    return Promise.resolve();
 }
 
 const dispatchResearchUpdates = async (leCtx) => {
@@ -34,11 +36,13 @@ const dispatchResearchUpdates = async (leCtx) => {
                     level: curTech.level
                 });
             }
-            leCtx.rcon.send('/set_technologies ' + JSON.stringify(techUpdateQuery));
+            await leCtx.rcon.send('/set_technologies ' + JSON.stringify(techUpdateQuery));
         } else {
             console.log('[-] Unexpected ds9 Api error: No resp');
         }
     }
+
+    return Promise.resolve();
 }
 
 export default {

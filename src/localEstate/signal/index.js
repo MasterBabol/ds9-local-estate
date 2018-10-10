@@ -27,6 +27,8 @@ const dispatchRxSignals = async (leCtx) => {
             }
         }
     }
+
+    return Promise.resolve();
 };
 
 const dispatchTxSignals = async (leCtx) => {
@@ -42,6 +44,8 @@ const dispatchTxSignals = async (leCtx) => {
     }
 
     ds9.signal.put(leCtx.config, txSignalsQuery);
+
+    return Promise.resolve();
 };
 
 export default {

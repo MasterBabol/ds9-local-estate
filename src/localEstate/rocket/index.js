@@ -72,6 +72,8 @@ const dispatchRxqueue = async (leCtx) => {
             }
         }
     }
+
+    return Promise.resolve();
 };
 
 const dispatchTxqueue = async (leCtx) => {
@@ -104,6 +106,8 @@ const dispatchTxqueue = async (leCtx) => {
             }
         }
     }
+
+    return Promise.resolve();
 };
 
 export default {

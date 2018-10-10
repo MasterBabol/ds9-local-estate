@@ -33,6 +33,8 @@ const dispatchRxElectricity = async (leCtx) => {
             }
         }
     }
+
+    return Promise.resolve();
 };
 
 const dispatchTxElectricity = async (leCtx) => {
@@ -48,6 +50,8 @@ const dispatchTxElectricity = async (leCtx) => {
 
     if (txElecsQuery['electricity-in-mj'] > 0)
         ds9.inventory(leCtx.config, txElecsQuery);
+
+    return Promise.resolve();
 };
 
 export default {

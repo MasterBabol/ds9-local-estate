@@ -78,18 +78,23 @@ const mainDispatchLoop = async (leCtx) => {
     if (checkShutdownCondition(leCtx))
         return;
     try {
+        let proms = [];
         leCtx.dispatchPeriodIdx++;
-        rocket.dispatchRxqueue(leCtx);
-        rocket.dispatchTxqueue(leCtx);
-        signal.dispatchRxSignals(leCtx);
-        signal.dispatchTxSignals(leCtx);
-        electricity.dispatchRxElectricity(leCtx);
-        electricity.dispatchTxElectricity(leCtx);
+        
+        proms.push(rocket.dispatchRxqueue(leCtx));
+        proms.push(rocket.dispatchTxqueue(leCtx));
+        proms.push(signal.dispatchRxSignals(leCtx));
+        proms.push(signal.dispatchTxSignals(leCtx));
+        proms.push(electricity.dispatchRxElectricity(leCtx));
+        proms.push(electricity.dispatchTxElectricity(leCtx));
         if ((leCtx.dispatchPeriodIdx % leCtx.config['techsync-period']) == 0) {
-            technology.dispatchResearchAnnounces(leCtx);
-            technology.dispatchResearchUpdates(leCtx);
+            proms.push(technology.dispatchResearchAnnounces(leCtx));
+            proms.push(technology.dispatchResearchUpdates(leCtx));
         }
+        await Promise.all(proms);
         setTimeout(() => { mainDispatchLoop(leCtx); }, 1000);
+        
+        return Promise.resolve();
     } catch (e) {
         console.log('[-] Unexpected error occured: ' + e);
         process.kill(process.pid, 'SIGINT');
