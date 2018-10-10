@@ -1,11 +1,12 @@
 import os from 'os';
 import request from 'request';
 
-const inventory = (config, items) => {
+const inventory = (config, items, reqNonExact) => {
+    let nonExactQuery = (reqExact)?'?nonexact':'';
 
     let reqOpt = {
         method: 'POST',
-        url: config['remote-address'] + '/api/inventory',
+        url: config['remote-address'] + '/api/inventory' + nonExactQuery,
         auth: {
             user: config['local-name'],
             password: config['accessToken']
