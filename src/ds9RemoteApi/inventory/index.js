@@ -2,7 +2,7 @@ import os from 'os';
 import request from 'request';
 
 const inventory = (config, items, reqNonExact) => {
-    let nonExactQuery = (reqExact)?'?nonexact':'';
+    let nonExactQuery = (reqNonExact)?'?nonexact':'';
 
     let reqOpt = {
         method: 'POST',

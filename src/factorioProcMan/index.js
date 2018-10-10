@@ -81,7 +81,7 @@ const deploy = (name, sub, options, config) => {
 
         if (options.modonly) {
             let copy = cproc.spawnSync(
-                'cp', ['-Rf','./deploy_pack/mods.','./factorio/inst/mods']
+                'cp', ['-Rf','./deploy_pack/mods/.','./factorio/inst/mods/']
             );
             console.log('[+] Mod files are successfully copied.');
         } else {

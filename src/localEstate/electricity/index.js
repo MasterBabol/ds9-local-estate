@@ -3,14 +3,14 @@ import ds9 from '../../ds9RemoteApi'
 const dispatchRxElectricity = async (leCtx) => {
     let rxElecReqs = await leCtx.rcon.send('/collect_rx_elec_reqs');
     let rxElecReqsParsed = JSON.parse(rxElecReqs);
-    let reqRxElecQuery = { 'electricity-in-kw':0 };
-
+    let reqRxElecQuery = { 'electricity-in-mj':0 };
+    
     if (rxElecReqsParsed instanceof Array) {
         for (var k of rxElecReqsParsed) {
-            reqRxElecQuery['electricity-in-kw'] -= rxElecReqsParsed[k].amount;
+            reqRxElecQuery['electricity-in-mj'] -= k.amount;
         }
-        
-        if (reqRxElecQuery['electricity-in-kw'] < 0) {
+
+        if (reqRxElecQuery['electricity-in-mj'] < 0) {
             let res = await ds9.inventory(leCtx.config, reqRxElecQuery);
             
             if (res.error) {
@@ -19,10 +19,10 @@ const dispatchRxElectricity = async (leCtx) => {
                 if (res.response) {
                     if (res.response.statusCode != 200) {
                         let ret = JSON.parse(res.body);
-                        var elecPool = ret['electricity-in-kw'] / reqRxElecQuery['electricity-in-kw'];
+                        var elecPool = ret['electricity-in-mj'] / reqRxElecQuery['electricity-in-mj'];
                         
                         for (var k of rxElecReqsParsed) {
-                            rxElecReqsParsed[k].amount *= elecPool;
+                            k.amount *= elecPool;
                         }
                         
                         leCtx.rcon.send('/set_rx_elecs ' + JSON.stringify(rxElecReqsParsed));
@@ -38,15 +38,15 @@ const dispatchRxElectricity = async (leCtx) => {
 const dispatchTxElectricity = async (leCtx) => {
     let txElecs = await leCtx.rcon.send('/collect_tx_elecs');
     let txElecsParsed = JSON.parse(txElecs);
-    let txElecsQuery = { 'electricity-in-kw':0 };
-
+    let txElecsQuery = { 'electricity-in-mj':0 };
+    
     if (txElecsParsed instanceof Array) {
         for (var k of txElecsParsed) {
-            txElecsQuery['electricity-in-kw'] += txElecsParsed[k].amount;
+            txElecsQuery['electricity-in-mj'] += k.amount;
         }
     }
 
-    if (txElecsQuery['electricity-in-kw'] > 0)
+    if (txElecsQuery['electricity-in-mj'] > 0)
         ds9.inventory(leCtx.config, txElecsQuery);
 };
 
