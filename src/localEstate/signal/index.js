@@ -20,7 +20,7 @@ const dispatchRxSignals = async (leCtx) => {
                             rxSigReqsParsed[rxSigKey].count = 0;
                     }
                     if (Object.keys(rxSigReqsParsed).length > 0)
-                        leCtx.rcon.send('/set_rx_signals ' + JSON.stringify(rxSigReqsParsed));
+                        await leCtx.rcon.send('/set_rx_signals ' + JSON.stringify(rxSigReqsParsed));
                 }
             } else {
                 console.log('[-] Unexpected ds9 Api error: No resp');

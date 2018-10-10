@@ -33,7 +33,7 @@ const dispatchRxqueue = async (leCtx) => {
                             if (result.response) {
                                 switch (result.response.statusCode) {
                                     case 200:
-                                        leCtx.rcon.send('/confirm_rx_reservation ' + JSON.stringify(rxReq));
+                                        await leCtx.rcon.send('/confirm_rx_reservation ' + JSON.stringify(rxReq));
                                         break;
                                     case 404:
                                     default:

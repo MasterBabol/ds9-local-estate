@@ -25,7 +25,7 @@ const dispatchRxElectricity = async (leCtx) => {
                             k.amount *= elecPool;
                         }
                         
-                        leCtx.rcon.send('/set_rx_elecs ' + JSON.stringify(rxElecReqsParsed));
+                        await leCtx.rcon.send('/set_rx_elecs ' + JSON.stringify(rxElecReqsParsed));
                     }
                 } else {
                     console.log('[-] Unexpected ds9 Api error: No resp');
