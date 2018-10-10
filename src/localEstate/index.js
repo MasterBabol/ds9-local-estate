@@ -12,9 +12,10 @@ const factorioSafeExit = async (leCtx) => {
             console.log('[!] ' + msg.body);
             if (msg.body.indexOf('Saving game as') >= 0) {
                 resp = true;
+                console.log('[!] Saving is in progress. Timeout: 10s');
             } else if (msg.body.indexOf('Saving finished') >= 0) {
                 console.log('[+] Game saving finished.');
-                leCtx.rcon.send('/quit');
+                await leCtx.rcon.send('/quit');
                 process.exit(0);
             }
         });
@@ -25,12 +26,12 @@ const factorioSafeExit = async (leCtx) => {
                 leCtx.launcher.proc.kill('SIGINT');
                 process.exit(0);
             }
-        }, 10000);
+        }, 15000);
     } catch (e) {
         console.log(e);
         process.exit(-1);
     }
-    return true;
+    return Promise.resolve();
 };
 
 const enterShutdownProcess = (leCtx) => {
