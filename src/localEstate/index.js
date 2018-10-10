@@ -89,6 +89,7 @@ const mainDispatchLoop = async (leCtx) => {
             technology.dispatchResearchAnnounces(leCtx);
             technology.dispatchResearchUpdates(leCtx);
         }
+        setTimeout(() => { mainDispatchLoop(leCtx); }, 1000);
     } catch (e) {
         console.log('[-] Unexpected error occured: ' + e);
         process.kill(process.pid, 'SIGINT');
@@ -129,7 +130,7 @@ const localEstate = function(config, launcher, rcon, lowdb) {
         installAnnounceAliveWorker(this);
     
         console.log('[!] Starting main dispatcher..');
-        setInterval(() => { mainDispatchLoop(this); }, 1000);
+        setTimeout(() => { mainDispatchLoop(this); }, 1000);
     };
 };
 

@@ -11,7 +11,7 @@ const dispatchRxSignals = async (leCtx) => {
         } else {
             if (rxQueryRes.response) {
                 if (rxQueryRes.response.statusCode == 200) {
-                    let sigList = JSON.parse(rxQueryRes.body);
+                    let sigList = rxQueryRes.body;
                     for (var rxSigKey of Object.keys(rxSigReqsParsed)) {
                         if (sigList[rxSigReqsParsed[rxSigKey].name] != undefined) {
                             rxSigReqsParsed[rxSigKey].count =

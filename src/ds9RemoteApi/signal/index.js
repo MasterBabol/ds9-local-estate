@@ -30,7 +30,8 @@ const signal = {
             auth: {
                 user: config['local-name'],
                 password: config['accessToken']
-            }
+            },
+            json: true
         };
 
         return new Promise((resolve, reject) => {

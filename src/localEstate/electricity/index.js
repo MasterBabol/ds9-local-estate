@@ -11,14 +11,14 @@ const dispatchRxElectricity = async (leCtx) => {
         }
 
         if (reqRxElecQuery['electricity-in-mj'] < 0) {
-            let res = await ds9.inventory(leCtx.config, reqRxElecQuery);
+            let res = await ds9.inventory(leCtx.config, reqRxElecQuery, true);
             
             if (res.error) {
                 console.log('[-] ds9 Api error (elec-req ret): ' + res.error);
             } else {
                 if (res.response) {
-                    if (res.response.statusCode != 200) {
-                        let ret = JSON.parse(res.body);
+                    if (res.response.statusCode == 200) {
+                        let ret = res.body;
                         var elecPool = ret['electricity-in-mj'] / reqRxElecQuery['electricity-in-mj'];
                         
                         for (var k of rxElecReqsParsed) {

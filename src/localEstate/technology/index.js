@@ -25,7 +25,7 @@ const dispatchResearchUpdates = async (leCtx) => {
     } else {
         if (res.response) {
             let techUpdateQuery = [];
-            let teches = JSON.parse(res.body);
+            let teches = res.body;
             for (var techKey of Object.keys(teches)) {
                 var curTech = teches[techKey];
                 techUpdateQuery.push({

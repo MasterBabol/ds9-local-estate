@@ -12,7 +12,7 @@ const inventory = (config, items, reqNonExact) => {
             password: config['accessToken']
         },
         json: {
-            "items": items
+            items: items
         }
     };
 
