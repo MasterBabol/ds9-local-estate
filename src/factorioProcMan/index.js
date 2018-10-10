@@ -39,7 +39,7 @@ const download = (name, sub, options, config) => {
 };
 
 const parser = function* (stringLines) {
-    let parseRegex = /(?:\s+(?:\d+\.\d+)\s(?:(?:(Info)\s(\w+)\.cpp:\d+:\s(.*))|(?:(.+))))|(?:\d{4}-\d{1,2}-\d{1,2}\s\d{1,2}:\d{1,2}:\d{1,2}\s(?:\[(\w+)\]\s)?(.*))\n?/g;
+    let parseRegex = /(?:\s+(?:\d+\.\d+)\s(?:(?:(\w+)\s(\w+)\.cpp:\d+:\s(.*))|(?:(.+))))|(?:\d{4}-\d{1,2}-\d{1,2}\s\d{1,2}:\d{1,2}:\d{1,2}\s(?:\[(\w+)\]\s)?(.*))\n?/g;
     let caps;
     while ((caps = parseRegex.exec(stringLines)) !== null) {
         if (typeof(caps[6]) != 'undefined') {
@@ -52,17 +52,25 @@ const parser = function* (stringLines) {
             else
                 yield {
                     type: 'gameuncat',
-                    readon: '',
+                    reason: '',
                     body: caps[6].trim()
                 };
         }
         else {
-            if (caps[1] && caps[1] == "Info") {
-                yield {
-                    type: 'info',
-                    reason: caps[2],
-                    body: caps[3].trim()
-                };
+            if (caps[1]) {
+                if (caps[1] == "Info") {
+                    yield {
+                        type: 'info',
+                        reason: caps[2],
+                        body: caps[3].trim()
+                    };
+                } else if (caps[1] == "Error") {
+                    yield {
+                        type: 'error',
+                        reason: caps[2],
+                        body: caps[3].trim()
+                    };
+                }
             } else
                 yield {
                     type: 'norm',

@@ -107,7 +107,9 @@ const printFactorioLog = (msg) => {
         type = 'g';
     } else if (msg.type == 'info') {
         type = 'i';
-    } else if (msg.type == 'gameuncat') {
+    } else if (msg.type == 'error') {
+        type = 'e';
+    }else if (msg.type == 'gameuncat') {
         type = 'u';
     } else if (msg.type == 'norm') {
         type = 'n';
@@ -130,6 +132,7 @@ const localEstate = function(config, launcher, rcon, lowdb) {
         let disableAchievements = await rcon.send('/c');
         launcher.on('game', printFactorioLog);
         launcher.on('norm', printFactorioLog);
+        launcher.on('error', printFactorioLog);
         
         installSigintHandler(this);
         installAnnounceAliveWorker(this);
