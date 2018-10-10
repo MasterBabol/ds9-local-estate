@@ -69,7 +69,7 @@ function runLocalEstate() {
 
     rconDetector.once('fRCONlistening', () => {
         console.log('[+] Factorio server Rcon interface is ready');
-        const rcon = new Rcon({ packetResponseTimeout: 2000});
+        const rcon = new Rcon({ packetResponseTimeout: 10000});
 
         rcon.onDidConnect(() => {
             console.log('[+] Rcon interface is now ready.');

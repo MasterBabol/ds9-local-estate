@@ -2,6 +2,7 @@ import ds9 from '../ds9RemoteApi';
 import rocket from './rocket';
 import signal from './signal';
 import technology from './technology';
+import electricity from './electricity';
 
 const factorioSafeExit = async (leCtx) => {
     try {
@@ -82,6 +83,8 @@ const mainDispatchLoop = async (leCtx) => {
         rocket.dispatchTxqueue(leCtx);
         signal.dispatchRxSignals(leCtx);
         signal.dispatchTxSignals(leCtx);
+        electricity.dispatchRxElectricity(leCtx);
+        electricity.dispatchTxElectricity(leCtx);
         if ((leCtx.dispatchPeriodIdx % leCtx.config['techsync-period']) == 0) {
             technology.dispatchResearchAnnounces(leCtx);
             technology.dispatchResearchUpdates(leCtx);

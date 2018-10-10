@@ -51,6 +51,6 @@ const dispatchTxElectricity = async (leCtx) => {
 };
 
 export default {
-    dispatchRxSignals,
-    dispatchTxSignals
+    dispatchRxElectricity,
+    dispatchTxElectricity
 };
