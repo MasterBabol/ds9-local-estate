@@ -13,7 +13,12 @@ const dispatchResearchAnnounces = async (leCtx) => {
                 level: tech.level
             };
         }
-        await ds9.technology.put(leCtx.config, techQuery);
+        
+        let res = await ds9.technology.put(leCtx.config, techQuery);
+        
+        if (res.error || (res.response.statusCode != 200)) {
+            console.log('[-] DS9RC-TXTECH HTTP req failed: ' + res.error.code);
+        }
     }
 
     return Promise.resolve();
@@ -21,24 +26,20 @@ const dispatchResearchAnnounces = async (leCtx) => {
 
 const dispatchResearchUpdates = async (leCtx) => {
     let res = await ds9.technology.get(leCtx.config);
-    if (res.error) {
-        console.log('[-] ds9 Api error (tech ret): ' + res.error);
-    } else {
-        if (res.response) {
-            let techUpdateQuery = [];
-            let teches = res.body;
-            for (var techKey of Object.keys(teches)) {
-                var curTech = teches[techKey];
-                techUpdateQuery.push({
-                    name: techKey,
-                    researched: curTech.researched,
-                    level: curTech.level
-                });
-            }
-            await leCtx.rcon.send('/set_technologies ' + JSON.stringify(techUpdateQuery));
-        } else {
-            console.log('[-] Unexpected ds9 Api error: No resp');
+    if (!res.error && (res.response.statusCode == 200)) {
+        let techUpdateQuery = [];
+        let teches = res.body;
+        for (var techKey of Object.keys(teches)) {
+            var curTech = teches[techKey];
+            techUpdateQuery.push({
+                name: techKey,
+                researched: curTech.researched,
+                level: curTech.level
+            });
         }
+        await leCtx.rcon.send('/set_technologies ' + JSON.stringify(techUpdateQuery));
+    } else {
+        console.log('[-] DS9RC-RXTECH HTTP req failed: ' + res.error.code);
     }
 
     return Promise.resolve();

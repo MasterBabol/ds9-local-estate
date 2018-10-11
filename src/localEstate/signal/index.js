@@ -5,26 +5,22 @@ const dispatchRxSignals = async (leCtx) => {
     let rxSigReqsParsed = JSON.parse(rxSignalReqs);
 
     if (rxSigReqsParsed instanceof Array) {
-        let rxQueryRes = await ds9.signal.get(leCtx.config);
-        if (rxQueryRes.error) {
-            console.log('[-] ds9 Api error (rxs ret): ' + result.error);
-        } else {
-            if (rxQueryRes.response) {
-                if (rxQueryRes.response.statusCode == 200) {
-                    let sigList = rxQueryRes.body;
-                    for (var rxSigKey of Object.keys(rxSigReqsParsed)) {
-                        if (sigList[rxSigReqsParsed[rxSigKey].name] != undefined) {
-                            rxSigReqsParsed[rxSigKey].count =
-                                sigList[rxSigReqsParsed[rxSigKey].name];
-                        } else
-                            rxSigReqsParsed[rxSigKey].count = 0;
-                    }
-                    if (Object.keys(rxSigReqsParsed).length > 0)
-                        await leCtx.rcon.send('/set_rx_signals ' + JSON.stringify(rxSigReqsParsed));
-                }
-            } else {
-                console.log('[-] Unexpected ds9 Api error: No resp');
+        let res = await ds9.signal.get(leCtx.config);
+        
+        if (!res.error && (res.response.statusCode == 200)) {
+            let sigList = res.body;
+            for (var rxSigKey of Object.keys(rxSigReqsParsed)) {
+                if (sigList[rxSigReqsParsed[rxSigKey].name] != undefined) {
+                    rxSigReqsParsed[rxSigKey].count =
+                        sigList[rxSigReqsParsed[rxSigKey].name];
+                } else
+                    rxSigReqsParsed[rxSigKey].count = 0;
             }
+            
+            if (Object.keys(rxSigReqsParsed).length > 0)
+                await leCtx.rcon.send('/set_rx_signals ' + JSON.stringify(rxSigReqsParsed));
+        } else {
+            console.log('[-] DS9RC-RXSIG HTTP req failed: ' + res.error.code);
         }
     }
 
@@ -43,7 +39,10 @@ const dispatchTxSignals = async (leCtx) => {
         }
     }
 
-    ds9.signal.put(leCtx.config, txSignalsQuery);
+    let res = await ds9.signal.put(leCtx.config, txSignalsQuery);
+    if (res.error || (res.response.statusCode != 200)) {
+        console.log('[-] DS9RC-TXSIG HTTP req failed: ' + res.error.code);
+    }
 
     return Promise.resolve();
 };
