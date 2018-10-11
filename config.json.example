@@ -1,10 +1,11 @@
 {
-    "remote-address": "http://localhost:4000",
+    "remote-address": "http://localhost:3000",
     "local-name": "local-estate-0",
     "accessToken": "le0Secret",
     "game-version": "0.16.51",
     "rcon-port": 34198,
     "rcon-password": "rconpass",
+    "update-period": 2000,
     "techsync-period": 15,
-    "autosave-period": 900
+    "autosave-period": 1200
 }

@@ -20,6 +20,9 @@ const get = () => {
         if (!config['game-version'])
             throw 'game version is not valid';
 
+        if (!config['update-period'] || isNaN(config['update-period']))
+            throw 'update period is not valid';
+
         if (!config['techsync-period'] || isNaN(config['techsync-period']))
             throw 'techsync period is not valid';
 

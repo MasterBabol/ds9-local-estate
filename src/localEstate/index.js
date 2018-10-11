@@ -94,7 +94,7 @@ const mainDispatchLoop = async (leCtx) => {
             proms.push(technology.dispatchResearchUpdates(leCtx));
         }
         await Promise.all(proms);
-        setTimeout(() => { mainDispatchLoop(leCtx); }, 1000);
+        setTimeout(() => { mainDispatchLoop(leCtx); }, leCtx.config['update-period']);
         
         return Promise.resolve();
     } catch (e) {
@@ -127,7 +127,9 @@ const printFactorioLog = (msg) => {
     } else if (msg.type == 'norm') {
         type = 'n';
     }
-    console.log('[' + type + '] [' + msg.reason + '] ' + msg.body);
+    console.log('[' + type + '] ' + 
+        ((msg.reason != '')?('[' + msg.reason + '] '):'') +
+        msg.body);
 };
 
 const localEstate = function(config, launcher, rcon, lowdb) {    
