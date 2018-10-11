@@ -8,7 +8,7 @@ const factorioSafeExit = async (leCtx) => {
     try {
         let resp = false;
         console.log('[!] Attempting to save the game..');
-        leCtx.launcher.on('all', (msg) => {
+        leCtx.launcher.on('all', async (msg) => {
             console.log('[!] ' + msg.body);
             if (msg.body.indexOf('Saving game as') >= 0) {
                 resp = true;
