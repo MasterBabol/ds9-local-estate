@@ -69,7 +69,7 @@ const installAnnounceAliveWorker = (leCtx) => {
         ds9.announceAlive(leCtx.config).then((res) => {
             if (res.error) {
                 console.log('[-] Cannot connect to DS9 Remote cloud: ' + res.error.code);
-                enterShutdownProcess(leCtx);
+                //enterShutdownProcess(leCtx);
             }
         });
     }, 20 * 1000);
