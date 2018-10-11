@@ -49,7 +49,9 @@ const dispatchTxElectricity = async (leCtx) => {
     if (txElecsQuery['electricity-in-mj'] > 0) {
         let res = await ds9.inventory(leCtx.config, txElecsQuery);
         
-        if (res.error || (res.response.statusCode != 200)) {
+        if (!res.error && (res.response.statusCode == 200)) {
+            db.set('failed-tx-elec', 0).write();
+        } else {
             console.log('[-] DS9RC-TXEL HTTP req failed: ' + res.error.code);
             db.set('failed-tx-elec', txElecsQuery['electricity-in-mj']).write();
             console.log('[!] Last TXEL query has been saved.');

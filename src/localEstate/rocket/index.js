@@ -112,7 +112,9 @@ const dispatchTxqueue = async (leCtx) => {
     if (Object.keys(itemsQuery).length > 0) {
         let res = await ds9.inventory(leCtx.config, itemsQuery);
 
-        if (res.error || (res.response.statusCode != 200)) {
+        if (!res.error && (res.response.statusCode == 200)) {
+            db.set('failed-tx-inv', {}).write();
+        } else {
             console.log('[-] DS9RC-TXRCK HTTP req failed: ' + res.error.code);
             db.set('failed-tx-inv', itemsQuery).write();
             console.log('[!] Last TXRCK query has been saved.');
