@@ -151,9 +151,8 @@ const localEstate = function(config, launcher, rcon, lowdb) {
         installAnnounceAliveWorker(this);
     
         console.log('[!] Starting main dispatcher..');
-        setTimeout(() => { mainDispatchLoop(this); }, 1000);
-        setTimeout(() => { autoSaveLoop(this); }, 
-                    config['autosave-period'] * 1000);
+        mainDispatchLoop(this);
+        autoSaveLoop(this); 
     };
 };
 
