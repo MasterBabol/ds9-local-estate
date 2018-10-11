@@ -12,9 +12,8 @@ const dispatchResearchAnnounces = async (leCtx) => {
                 researched: tech.researched,
                 level: tech.level
             };
-
-            ds9.technology.put(leCtx.config, techQuery);
         }
+        await ds9.technology.put(leCtx.config, techQuery);
     }
 
     return Promise.resolve();

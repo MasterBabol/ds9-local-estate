@@ -23,6 +23,9 @@ const get = () => {
         if (!config['techsync-period'] || isNaN(config['techsync-period']))
             throw 'techsync period is not valid';
 
+        if (!config['autosave-period'] || isNaN(config['autosave-period']))
+            throw 'autosave period is not valid';
+
         return config;
     } catch (e) {
         console.log('[-] Config file error: ' + e);

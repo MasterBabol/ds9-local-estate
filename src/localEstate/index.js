@@ -102,6 +102,17 @@ const mainDispatchLoop = async (leCtx) => {
     }
 };
 
+const autoSaveLoop = async (leCtx) => {
+    if (leCtx.shutdownState)
+        return Promise.resolve();
+    else {
+        await leCtx.rcon.send('/c game.server_save()');
+        setTimeout(() => { autoSaveLoop(leCtx); },
+            leCtx.config['autosave-period'] * 1000);
+        return Promise.resolve();
+    }
+};
+
 const printFactorioLog = (msg) => {
     let type = '!';
     if (msg.type == 'game') {
@@ -140,6 +151,8 @@ const localEstate = function(config, launcher, rcon, lowdb) {
     
         console.log('[!] Starting main dispatcher..');
         setTimeout(() => { mainDispatchLoop(this); }, 1000);
+        setTimeout(() => { autoSaveLoop(this); }, 
+                    config['autosave-period'] * 1000);
     };
 };
 
