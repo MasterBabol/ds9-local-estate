@@ -12,7 +12,7 @@ const factorioSafeExit = async (leCtx) => {
             console.log('[!] ' + msg.body);
             if (msg.body.indexOf('Saving game as') >= 0) {
                 resp = true;
-                console.log('[!] Saving is in progress. Timeout: 10s');
+                console.log('[!] Saving is in progress.');
             } else if (msg.body.indexOf('Saving finished') >= 0) {
                 console.log('[+] Game saving finished.');
                 await leCtx.rcon.send('/quit');
@@ -49,8 +49,9 @@ const enterShutdownProcess = (leCtx) => {
 };
 
 const installSigintHandler = (leCtx) => {
-    process.once('SIGINT', () => {
-        process.on('SIGINT', () => {});
+    process.on('SIGINT', () => {
+        if (leCtx.shutdownState)
+            return;
         console.log('\n[!] Received SIGINT. Entering shutdown state..');
         enterShutdownProcess(leCtx);
     });
@@ -134,7 +135,7 @@ const localEstate = function(config, launcher, rcon, lowdb) {
     this.launcher = launcher;
     this.rcon = rcon;
     this.db = lowdb;
-    
+   
     this.shutdownState = false;
     this.shutdownReady = false;
     this.dispatchPeriodIdx = 0;

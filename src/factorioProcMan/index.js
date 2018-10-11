@@ -58,19 +58,11 @@ const parser = function* (stringLines) {
         }
         else {
             if (caps[1]) {
-                if (caps[1] == "Info") {
-                    yield {
-                        type: 'info',
-                        reason: caps[2],
-                        body: caps[3].trim()
-                    };
-                } else if (caps[1] == "Error") {
-                    yield {
-                        type: 'error',
-                        reason: caps[2],
-                        body: caps[3].trim()
-                    };
-                }
+                yield {
+                    type: caps[1].toLowerCase(),
+                    reason: caps[2],
+                    body: caps[3].trim()
+                };
             } else
                 yield {
                     type: 'norm',
@@ -86,6 +78,10 @@ const deploy = (name, sub, options, config) => {
         try {
             fs.mkdirSync('./factorio/inst');
         } catch (e) {}
+        
+        let copy = cproc.spawnSync(
+            'rm', ['-f','./deploy_pack/mods/deepspace*.zip']
+        );
 
         if (options.modonly) {
             let copy = cproc.spawnSync(
