@@ -95,7 +95,7 @@ const dispatchTxqueue = async (leCtx) => {
     let txReqs = await leCtx.rcon.send('/dequeue_tx_queue');
     let txReqsParsed = JSON.parse(txReqs);
     let db = leCtx.db.read();
-    let prevFailedTx = db.defaults({ 'failed-tx-inv': {} }).get('failed-tx-inv');
+    let prevFailedTx = db.defaults({ 'failed-tx-inv': {} }).get('failed-tx-inv').value();
     let itemsQuery = {};
 
     if (txReqsParsed instanceof Array) {
