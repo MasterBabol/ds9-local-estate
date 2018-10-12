@@ -60,7 +60,7 @@ function runLocalEstate() {
     let launcher = new fman.launcher(config);
     let rconDetector = new EventEmitter();
 
-    launcher.once('info', (msg) => {
+    launcher.on('info', (msg) => {
         if (msg.reason == 'RemoteCommandProcessor' &&
             (msg.body.indexOf('Starting RCON interface') >= 0)
         )
