@@ -141,9 +141,9 @@ const launcher = function (config) {
             let parsedGen = parser(data.toString());
             let parsed;
             while (!(parsed = parsedGen.next()).done) {
-                if (this.eventEmitter.listener(parsed.value.type).length > 0)
+                if (this.eventEmitter.listeners(parsed.value.type).length > 0)
                     this.eventEmitter.emit(parsed.value.type, parsed.value);
-                if (this.eventEmitter.listener('all').length > 0)
+                if (this.eventEmitter.listeners('all').length > 0)
                     this.eventEmitter.emit('all', parsed.value);
             }
             } catch (e) {
