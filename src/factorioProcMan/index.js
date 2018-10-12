@@ -136,13 +136,15 @@ const launcher = function (config) {
                 '--rcon-password', config['rcon-password']
             ], {detached: true}
         );
-        proc.stdout.on('data', async (data) => {
+        proc.stdout.on('data', (data) => {
             try {
             let parsedGen = parser(data.toString());
             let parsed;
             while (!(parsed = parsedGen.next()).done) {
-                await this.eventEmitter.emit(parsed.value.type, parsed.value);
-                await this.eventEmitter.emit('all', parsed.value);
+                if (this.eventEmitter.listener(parsed.value.type).length > 0)
+                    this.eventEmitter.emit(parsed.value.type, parsed.value);
+                if (this.eventEmitter.listener('all').length > 0)
+                    this.eventEmitter.emit('all', parsed.value);
             }
             } catch (e) {
                 console.log('Unexpected error: ' + e);
