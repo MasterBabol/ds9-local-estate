@@ -41,7 +41,7 @@ const dispatchRxqueue = async (leCtx) => {
             var reqId = rxReq.id;
             var reqType = rxReq.type;
             var items = rxReq.items;
-            
+
             switch (reqType) {
                 case RXREQTYPE_RESERVE:
                     var commitItems = {};
@@ -54,14 +54,15 @@ const dispatchRxqueue = async (leCtx) => {
                     }
                     if (Object.keys(items).length > 0) {
                         let res = await ds9.inventory(leCtx.config, commitItems);
-                        
+
                         if (!res.error && (res.response.statusCode == 200)) {
                             await leCtx.rcon.send('/confirm_rx_reservation ' + JSON.stringify(rxReq));
                         } else {
-                            console.log('[-] DS9RC-RXRCKRES HTTP req failed: ' + res.error.code);
+                            if (res.error)
+                                console.log('[-] DS9RC-RXRCKRES HTTP req failed: ' + res.error.code);
                         }
                     }
-                        
+
                     break;
                 case RXREQTYPE_REVOKE:
                     // current policy: ignore
@@ -76,11 +77,13 @@ const dispatchRxqueue = async (leCtx) => {
                         let res = await ds9.inventory(leCtx.config, items);
 
                         if (res.error || (res.response.statusCode != 200)) {
-                            console.log('[-] DS9RC-RXRCKRET HTTP req failed: ' + res.error.code);
-                            let prevFailed = prevFailedTx.value();
-                            let saveInv = mergeInventory(prevFailed, items);
-                            db.set('failed-tx-inv', saveInv).write();
-                            console.log('[!] Last RCKRET query has been saved.');
+                            if (res.error) {
+                                console.log('[-] DS9RC-RXRCKRET HTTP req failed: ' + res.error.code);
+                                let prevFailed = prevFailedTx.value();
+                                let saveInv = mergeInventory(prevFailed, items);
+                                db.set('failed-tx-inv', saveInv).write();
+                                console.log('[!] Last RCKRET query has been saved.');
+                            }
                         }
                     }
                     break;
@@ -102,22 +105,24 @@ const dispatchTxqueue = async (leCtx) => {
         for (var txReq of txReqsParsed) {
             var reqId = txReq.id;
             var items = txReq.items;
-            
+
             mergeInventory(itemsQuery, items);
         }
     }
-    
+
     mergeInventory(itemsQuery, prevFailedTx);
-    
+
     if (Object.keys(itemsQuery).length > 0) {
         let res = await ds9.inventory(leCtx.config, itemsQuery);
 
         if (!res.error && (res.response.statusCode == 200)) {
             db.set('failed-tx-inv', {}).write();
         } else {
-            console.log('[-] DS9RC-TXRCK HTTP req failed: ' + res.error.code);
-            db.set('failed-tx-inv', itemsQuery).write();
-            console.log('[!] Last TXRCK query has been saved.');
+            if (res.error) {
+                console.log('[-] DS9RC-TXRCK HTTP req failed: ' + res.error.code);
+                db.set('failed-tx-inv', itemsQuery).write();
+                console.log('[!] Last TXRCK query has been saved.');
+            }
         }
     }
 

@@ -17,7 +17,8 @@ const dispatchResearchAnnounces = async (leCtx) => {
         let res = await ds9.technology.put(leCtx.config, techQuery);
         
         if (res.error || (res.response.statusCode != 200)) {
-            console.log('[-] DS9RC-TXTECH HTTP req failed: ' + res.error.code);
+            if (res.error)
+                console.log('[-] DS9RC-TXTECH HTTP req failed: ' + res.error.code);
         }
     }
 
@@ -39,7 +40,8 @@ const dispatchResearchUpdates = async (leCtx) => {
         }
         await leCtx.rcon.send('/set_technologies ' + JSON.stringify(techUpdateQuery));
     } else {
-        console.log('[-] DS9RC-RXTECH HTTP req failed: ' + res.error.code);
+        if (res.error)
+            console.log('[-] DS9RC-RXTECH HTTP req failed: ' + res.error.code);
     }
 
     return Promise.resolve();
