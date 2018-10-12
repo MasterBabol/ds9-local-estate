@@ -83,6 +83,11 @@ function runLocalEstate() {
             le.run();
         });
 
+        rcon.onDidDisconnet(() => {
+            console.log('[-] Rcon connection is terminated.');
+            process.kill(process.pid, 'SIGINT');
+        });
+
         rcon.connect({
             host: 'localhost',
             port: config['rcon-port'],
