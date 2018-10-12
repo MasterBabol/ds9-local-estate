@@ -60,7 +60,7 @@ function runLocalEstate() {
     let launcher = new fman.launcher(config);
     let rconDetector = new EventEmitter();
 
-    launcher.on('info', (msg) => {
+    launcher.once('info', (msg) => {
         if (msg.reason == 'RemoteCommandProcessor' &&
             (msg.body.indexOf('Starting RCON interface') >= 0)
         )
@@ -72,7 +72,10 @@ function runLocalEstate() {
         const rcon = new Rcon({ packetResponseTimeout: 2100000000});
         // practically infinite (rcon-client does not support infinite timeout)
 
+        var watchingTimeOut = true;
+
         rcon.onDidConnect(() => {
+            watchingTimeOut = false;
             console.log('[+] Rcon interface is now ready.');
         });
 
@@ -83,7 +86,7 @@ function runLocalEstate() {
             le.run();
         });
 
-        rcon.onDidDisconnet(() => {
+        rcon.onDidDisconnect(() => {
             console.log('[-] Rcon connection is terminated.');
             process.kill(process.pid, 'SIGINT');
         });
@@ -93,6 +96,13 @@ function runLocalEstate() {
             port: config['rcon-port'],
             password: config['rcon-password']
         });
+
+        setTimeout(() => {{
+            if (watchingTimeOut) {
+                console.log('[-] Initial Rcon connection is timed out.');
+                process.kill(process.pid, 'SIGINT');;
+            }
+        }, 5000);
     });
 
     console.log('[!] Launching a factorio server instance..');
