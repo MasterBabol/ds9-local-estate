@@ -13,7 +13,8 @@ const inventory = (config, items, reqNonExact) => {
         },
         json: {
             items: items
-        }
+        },
+        timeout: 2500
     };
 
     return new Promise((resolve, reject) => {

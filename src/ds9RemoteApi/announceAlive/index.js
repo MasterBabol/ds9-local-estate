@@ -17,7 +17,8 @@ const announceAlive = (config) => {
             'cpuUse%': Number((100 * cpuAvg).toFixed(1)),
             'memUse%': Number((100 * (memTotal - memFree) / memTotal).toFixed(1)),
             'memTotalMB': Math.floor(memTotal / 1024 / 1024)
-        }
+        },
+        timeout: 2500
     };
 
     return new Promise((resolve, reject) => {

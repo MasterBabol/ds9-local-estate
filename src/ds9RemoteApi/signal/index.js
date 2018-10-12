@@ -10,7 +10,8 @@ const signal = {
                 user: config['local-name'],
                 password: config['accessToken']
             },
-            json: signals
+            json: signals,
+            timeout: 2500
         };
 
         return new Promise((resolve, reject) => {
@@ -31,7 +32,8 @@ const signal = {
                 user: config['local-name'],
                 password: config['accessToken']
             },
-            json: true
+            json: true,
+            timeout: 2500
         };
 
         return new Promise((resolve, reject) => {
