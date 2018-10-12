@@ -125,6 +125,9 @@ const launcher = function (config) {
     this.on = (eventType, callback) => {
         this.eventEmitter.on(eventType, callback);
     };
+    this.once = (eventType, callback) => {
+        this.eventEmitter.once(eventType, callback);
+    };
     this.start = () => {
         let proc = cproc.spawn(
             './factorio/bin/x64/factorio', [

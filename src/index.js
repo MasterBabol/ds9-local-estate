@@ -64,7 +64,7 @@ function runLocalEstate() {
         if (msg.reason == 'RemoteCommandProcessor' &&
             (msg.body.indexOf('Starting RCON interface') >= 0)
         )
-            rconDetector.emit('fRCONlistening');
+        rconDetector.emit('fRCONlistening');
     });
 
     rconDetector.once('fRCONlistening', () => {
@@ -97,10 +97,10 @@ function runLocalEstate() {
             password: config['rcon-password']
         });
 
-        setTimeout(() => {{
+        setTimeout(() => {
             if (watchingTimeOut) {
                 console.log('[-] Initial Rcon connection is timed out.');
-                process.kill(process.pid, 'SIGINT');;
+                process.kill(process.pid, 'SIGINT');
             }
         }, 5000);
     });
