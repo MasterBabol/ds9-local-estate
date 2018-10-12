@@ -137,11 +137,15 @@ const launcher = function (config) {
             ], {detached: true}
         );
         proc.stdout.on('data', async (data) => {
+            try {
             let parsedGen = parser(data.toString());
             let parsed;
             while (!(parsed = parsedGen.next()).done) {
                 await this.eventEmitter.emit(parsed.value.type, parsed.value);
                 await this.eventEmitter.emit('all', parsed.value);
+            }
+            } catch (e) {
+                console.log('Unexpected error: ' + e);
             }
         });
         this.proc = proc;
