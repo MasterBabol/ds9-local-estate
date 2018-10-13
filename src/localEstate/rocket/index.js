@@ -58,8 +58,13 @@ const dispatchRxqueue = async (leCtx) => {
                         if (!res.error && (res.response.statusCode == 200)) {
                             await leCtx.rcon.send('/confirm_rx_reservation ' + JSON.stringify(rxReq));
                         } else {
+                            let reason;
                             if (res.error)
-                                console.log('[-] DS9RC-RXRCKRES HTTP req failed: ' + res.error.code);
+                                reason = res.error.code;
+                            else
+                                reason = "HTTP " + res.response.statusCode;
+                            
+                            console.log('[-] DS9RC-RXRCKRES HTTP req failed: ' + reason);
                         }
                     }
 
@@ -77,13 +82,17 @@ const dispatchRxqueue = async (leCtx) => {
                         let res = await ds9.inventory(leCtx.config, items);
 
                         if (res.error || (res.response.statusCode != 200)) {
-                            if (res.error) {
-                                console.log('[-] DS9RC-RXRCKRET HTTP req failed: ' + res.error.code);
-                                let prevFailed = prevFailedTx.value();
-                                let saveInv = mergeInventory(prevFailed, items);
-                                db.set('failed-tx-inv', saveInv).write();
-                                console.log('[!] Last RCKRET query has been saved.');
-                            }
+                            let reason;
+                            if (res.error)
+                                reason = res.error.code;
+                            else
+                                reason = "HTTP " + res.response.statusCode;
+                            
+                            console.log('[-] DS9RC-RXRCKRET HTTP req failed: ' + reason);
+                            let prevFailed = prevFailedTx.value();
+                            let saveInv = mergeInventory(prevFailed, items);
+                            db.set('failed-tx-inv', saveInv).write();
+                            console.log('[!] Last RCKRET query has been saved.');
                         }
                     }
                     break;
@@ -118,11 +127,15 @@ const dispatchTxqueue = async (leCtx) => {
         if (!res.error && (res.response.statusCode == 200)) {
             db.set('failed-tx-inv', {}).write();
         } else {
-            if (res.error) {
-                console.log('[-] DS9RC-TXRCK HTTP req failed: ' + res.error.code);
-                db.set('failed-tx-inv', itemsQuery).write();
-                console.log('[!] Last TXRCK query has been saved.');
-            }
+            let reason;
+            if (res.error)
+                reason = res.error.code;
+            else
+                reason = "HTTP " + res.response.statusCode;
+            
+            console.log('[-] DS9RC-TXRCK HTTP req failed: ' + reason);
+            db.set('failed-tx-inv', itemsQuery).write();
+            console.log('[!] Last TXRCK query has been saved.');
         }
     }
 

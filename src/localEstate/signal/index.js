@@ -20,8 +20,14 @@ const dispatchRxSignals = async (leCtx) => {
             if (Object.keys(rxSigReqsParsed).length > 0)
                 await leCtx.rcon.send('/set_rx_signals ' + JSON.stringify(rxSigReqsParsed));
         } else {
+            let reason;
             if (res.error)
-                console.log('[-] DS9RC-RXSIG HTTP req failed: ' + res.error.code);
+                reason = res.error.code;
+            else
+                reason = "HTTP " + res.response.statusCode;
+            
+            
+            console.log('[-] DS9RC-RXSIG HTTP req failed: ' + reason);
         }
     }
 
@@ -42,8 +48,13 @@ const dispatchTxSignals = async (leCtx) => {
 
     let res = await ds9.signal.put(leCtx.config, txSignalsQuery);
     if (res.error || (res.response.statusCode != 200)) {
+        let reason;
         if (res.error)
-            console.log('[-] DS9RC-TXSIG HTTP req failed: ' + res.error.code);
+            reason = res.error.code;
+        else
+            reason = "HTTP " + res.response.statusCode;
+        
+        console.log('[-] DS9RC-TXSIG HTTP req failed: ' + reason);
     }
 
     return Promise.resolve();

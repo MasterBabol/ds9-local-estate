@@ -24,8 +24,13 @@ const dispatchRxElectricity = async (leCtx) => {
 
             await leCtx.rcon.send('/set_rx_elecs ' + JSON.stringify(rxElecReqsParsed));
         } else {
+            let reason;
             if (res.error)
-                console.log('[-] DS9RC-RXEL HTTP req failed: ' + res.error.code);
+                reason = res.error.code;
+            else
+                reason = "HTTP " + res.response.statusCode;
+            
+            console.log('[-] DS9RC-RXEL HTTP req failed: ' + reason);
         }
     }
 
@@ -53,11 +58,15 @@ const dispatchTxElectricity = async (leCtx) => {
         if (!res.error && (res.response.statusCode == 200)) {
             db.set('failed-tx-elec', 0).write();
         } else {
-            if (res.error) {
-                console.log('[-] DS9RC-TXEL HTTP req failed: ' + res.error.code);
-                db.set('failed-tx-elec', txElecsQuery['electricity-in-mj']).write();
-                console.log('[!] Last TXEL query has been saved.');
-            }
+            let reason;
+            if (res.error)
+                reason = res.error.code;
+            else
+                reason = "HTTP " + res.response.statusCode;
+            
+            console.log('[-] DS9RC-TXEL HTTP req failed: ' + reason);
+            db.set('failed-tx-elec', txElecsQuery['electricity-in-mj']).write();
+            console.log('[!] Last TXEL query has been saved.');
         }
     }
 
