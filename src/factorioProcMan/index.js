@@ -78,7 +78,7 @@ const deploy = (name, sub, options, config) => {
         try {
             fs.mkdirSync('./factorio/inst');
         } catch (e) {}
-        
+
         let copy = cproc.spawnSync(
             'rm', ['-f','./deploy_pack/mods/deepspace*.zip']
         );
@@ -95,11 +95,9 @@ const deploy = (name, sub, options, config) => {
             console.log('[+] Deploy pack files are successfully copied.');
 
             console.log('[!] Launching a factorio headless server..');
-            let factorio = cproc.spawnSync(
+            let factorio = cproc.spawn(
                 './factorio/bin/x64/factorio', [
                     '-c', './factorio/inst/config/config.ini',
-                    '--create',
-                    './factorio/inst/saves/manualsave.zip',
                     '--start-server-load-scenario',
                     'ds9freeplay',
                     '--map-gen-settings',
@@ -108,14 +106,18 @@ const deploy = (name, sub, options, config) => {
                     './factorio/inst/config/map-settings.json',
                 ]
             );
-            let mapCreateResponse = factorio.stdout.toString();
-            let errorDetectRegex = /Error\s+(.*)/g;
-            let detectedError = mapCreateResponse.match(errorDetectRegex);
-            if (detectedError)
-                for (var err of detectedError)
-                    console.log('[-] Factorio ' + err);
-            else
-                console.log('[+] A factorio instance is now ready.');
+            factorio.stdout.on('data', (data) => {
+                let res = data.toString();
+                if (res.indexOf('Error') >= 0)
+                    console.log(res);
+                else if (res.indexOf('Save process is complete') >= 0) {
+                    factorio.stdin.write('/quit\n');
+                } else if (res.indexOf('Goodbye') >= 0) {
+                    console.log('[+] A factorio instance is now ready.');
+                    process.exit(0);
+                }
+            });
+            factorio.stdin.write('/server_save manualsave\n');
         }
     } else {
         console.log('[-] Any factorio directory is not found.');
@@ -143,14 +145,14 @@ const launcher = function (config) {
         );
         proc.stdout.on('data', (data) => {
             try {
-            let parsedGen = parser(data.toString());
-            let parsed;
-            while (!(parsed = parsedGen.next()).done) {
-                if (this.eventEmitter.listeners(parsed.value.type).length > 0)
-                    this.eventEmitter.emit(parsed.value.type, parsed.value);
-                if (this.eventEmitter.listeners('all').length > 0)
-                    this.eventEmitter.emit('all', parsed.value);
-            }
+                let parsedGen = parser(data.toString());
+                let parsed;
+                while (!(parsed = parsedGen.next()).done) {
+                    if (this.eventEmitter.listeners(parsed.value.type).length > 0)
+                        this.eventEmitter.emit(parsed.value.type, parsed.value);
+                    if (this.eventEmitter.listeners('all').length > 0)
+                        this.eventEmitter.emit('all', parsed.value);
+                }
             } catch (e) {
                 console.log('Unexpected error: ' + e);
             }
