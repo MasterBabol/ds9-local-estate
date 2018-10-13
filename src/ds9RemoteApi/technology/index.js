@@ -11,7 +11,8 @@ const technology = {
                 password: config['accessToken']
             },
             json: signals,
-            timeout: 2500
+            timeout: 2500,
+            keepAlive: true
         };
 
         return new Promise((resolve, reject) => {
@@ -33,7 +34,8 @@ const technology = {
                 password: config['accessToken']
             },
             json: true,
-            timeout: 2500
+            timeout: 2500,
+            keepAlive: true
         };
 
         return new Promise((resolve, reject) => {

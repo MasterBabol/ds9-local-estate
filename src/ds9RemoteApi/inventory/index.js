@@ -14,7 +14,8 @@ const inventory = (config, items, reqNonExact) => {
         json: {
             items: items
         },
-        timeout: 2500
+        timeout: 2500,
+        keepAlive: true
     };
 
     return new Promise((resolve, reject) => {
