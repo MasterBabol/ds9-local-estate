@@ -100,6 +100,8 @@ const deploy = (name, sub, options, config) => {
                     '-c', './factorio/inst/config/config.ini',
                     '--create',
                     './factorio/inst/saves/manualsave.zip',
+                    '--start-server-load-scenario',
+                    'ds9freeplay',
                     '--map-gen-settings',
                     './factorio/inst/config/map-gen-settings.json',
                     '--map-settings',
