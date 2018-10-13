@@ -6,27 +6,11 @@ import electricity from './electricity';
 
 const factorioSafeExit = async (leCtx) => {
     try {
-        let resp = false;
         console.log('[!] Attempting to save the game..');
-        leCtx.launcher.on('all', async (msg) => {
-            console.log('[!] ' + msg.body);
-            if (msg.body.indexOf('Saving game as') >= 0) {
-                resp = true;
-                console.log('[!] Saving is in progress.');
-            } else if (msg.body.indexOf('Saving finished') >= 0) {
-                console.log('[+] Game saving finished.');
-                await leCtx.rcon.send('/quit');
-                process.exit(0);
-            }
-        });
-        leCtx.rcon.send('/c game.server_save()');
-        setTimeout(() => {
-            if (!resp) {
-                console.log('[-] Saving process is timed out. Forcing shutdown..');
-                leCtx.launcher.proc.kill('SIGINT');
-                process.exit(0);
-            }
-        }, 15000);
+        let msg = await leCtx.rcon.send('/server_save');
+        console.log('[+] ' + msg);
+        console.log('[!] Good bye.');
+        process.exit(0);
     } catch (e) {
         console.log(e);
         process.exit(-1);
@@ -107,7 +91,8 @@ const autoSaveLoop = async (leCtx) => {
     if (leCtx.shutdownState)
         return Promise.resolve();
     else {
-        await leCtx.rcon.send('/c game.server_save()');
+        let msg = await leCtx.rcon.send('/server_save');
+        console.log('[+] ' + msg);
         setTimeout(() => { autoSaveLoop(leCtx); },
             leCtx.config['autosave-period'] * 1000);
         return Promise.resolve();
@@ -154,7 +139,7 @@ const localEstate = function(config, launcher, rcon, lowdb) {
     
         console.log('[!] Starting main dispatcher..');
         mainDispatchLoop(this);
-        autoSaveLoop(this); 
+        setTimeout(() => { autoSaveLoop(this); }, this.config['autosave-period'] * 1000);
     };
 };
 
