@@ -7,7 +7,8 @@ import electricity from './electricity';
 const factorioSafeExit = async (leCtx) => {
     try {
         console.log('[!] Attempting to save the game..');
-        let msg = await leCtx.rcon.send('/server_save');
+        let msg = await leCtx.rcon.send('/server_save manualsave');
+        await leCtx.rcon.send('/c');
         console.log('[+] ' + msg);
         console.log('[!] Good bye.');
         process.exit(0);
@@ -91,7 +92,7 @@ const autoSaveLoop = async (leCtx) => {
     if (leCtx.shutdownState)
         return Promise.resolve();
     else {
-        let msg = await leCtx.rcon.send('/server_save');
+        let msg = await leCtx.rcon.send('/server_save manualsave');
         console.log('[+] ' + msg);
         setTimeout(() => { autoSaveLoop(leCtx); },
             leCtx.config['autosave-period'] * 1000);
