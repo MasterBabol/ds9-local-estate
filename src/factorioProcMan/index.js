@@ -79,20 +79,30 @@ const deploy = (name, sub, options, config) => {
             fs.mkdirSync('./factorio/inst');
         } catch (e) {}
 
-        let copy = cproc.spawnSync(
-            'rm', ['-f','./factorio/inst/mods/deepspace*.zip']
+        let delmods = cproc.execSync(
+            'rm -f ./factorio/inst/mods/deepspace*', {stdio:[0,1,2]}
         );
 
         if (options.modonly) {
             let copy = cproc.spawnSync(
                 'cp', ['-Rf','./deploy_pack/mods/.','./factorio/inst/mods/']
             );
-            console.log('[+] Mod files are successfully copied.');
+            if (copy.status == 0) {
+                console.log('[+] Mod files are successfully copied.');
+            } else {
+                console.log('[-] Failed to copy mod files.');
+                process.exit(2);
+            }
         } else {
             let copy = cproc.spawnSync(
                 'cp', ['-Rf','./deploy_pack/.','./factorio/inst/']
             );
-            console.log('[+] Deploy pack files are successfully copied.');
+            if (copy.status == 0) {
+                console.log('[+] Deploy pack files are successfully copied.');
+            } else {
+                console.log('[-] Failed to copy deploy pack files.');
+                process.exit(2);
+            }
 
             console.log('[!] Launching a factorio headless server..');
             let factorio = cproc.spawn(
