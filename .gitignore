@@ -66,4 +66,5 @@ factorio*.tar.xz
 
 db.json
 config.json
+deploy_pack/
 
