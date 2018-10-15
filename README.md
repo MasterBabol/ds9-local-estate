@@ -11,6 +11,7 @@ npm install
 cp config.json.example config.json # Modify this config file
 npm run build
 npm run download # This will download a factorio headless server
+cp -r deploy_pack.example deploy_pack
 # Before below step, you can change server settings and add some mods
 # At first, they are/will be located in ./deploy_pack/config and ./deploy_pack/mods
 # and "npm run deploy" will copy the files to a factorio game instance
