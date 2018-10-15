@@ -80,7 +80,7 @@ const deploy = (name, sub, options, config) => {
         } catch (e) {}
 
         let copy = cproc.spawnSync(
-            'rm', ['-f','./deploy_pack/mods/deepspace*.zip']
+            'rm', ['-f','./factorio/inst/mods/deepspace*.zip']
         );
 
         if (options.modonly) {
