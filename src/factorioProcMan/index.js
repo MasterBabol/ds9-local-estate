@@ -99,7 +99,7 @@ const deploy = (name, sub, options, config) => {
                 './factorio/bin/x64/factorio', [
                     '-c', './factorio/inst/config/config.ini',
                     '--start-server-load-scenario',
-                    'ds9freeplay',
+                    'deepspace9/ds9freeplay',
                     '--map-gen-settings',
                     './factorio/inst/config/map-gen-settings.json',
                     '--map-settings',
