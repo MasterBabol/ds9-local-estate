@@ -101,9 +101,9 @@ const deploy = (name, sub, options, config) => {
                     '--start-server-load-scenario',
                     'deepspace9/ds9freeplay',
                     '--map-gen-settings',
-                    './factorio/inst/config/map-gen-settings.json',
+                    './factorio/inst/configs/map-gen-settings.json',
                     '--map-settings',
-                    './factorio/inst/config/map-settings.json',
+                    './factorio/inst/configs/map-settings.json',
                 ]
             );
             factorio.stdout.on('data', (data) => {
@@ -135,10 +135,10 @@ const launcher = function (config) {
     this.start = () => {
         let proc = cproc.spawn(
             './factorio/bin/x64/factorio', [
-                '-c', './factorio/inst/config/config.ini',
+                '-c', './factorio/inst/configs/config.ini',
                 '--start-server', './factorio/inst/saves/manualsave.zip',
                 '--server-settings',
-                './factorio/inst/config/server-settings.json',
+                './factorio/inst/configs/server-settings.json',
                 '--rcon-port', config['rcon-port'],
                 '--rcon-password', config['rcon-password']
             ], {detached: true}
