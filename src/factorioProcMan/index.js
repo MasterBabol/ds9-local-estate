@@ -97,7 +97,7 @@ const deploy = (name, sub, options, config) => {
             console.log('[!] Launching a factorio headless server..');
             let factorio = cproc.spawn(
                 './factorio/bin/x64/factorio', [
-                    '-c', './factorio/inst/config/config.ini',
+                    '-c', './factorio/inst/configs/config.ini',
                     '--start-server-load-scenario',
                     'deepspace9/ds9freeplay',
                     '--map-gen-settings',
