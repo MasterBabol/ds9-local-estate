@@ -21,5 +21,19 @@ npm run start
 
 
 
+## Updating
+
+```sh
+git pull
+# Updating ds9 mod
+rm deploy_pack/mods/deepspace*.zip
+cp deploy_pack.example/mods/deepspace*.zip deploy_pack/mods/
+npm run depmods
+npm run build
+npm run start
+```
+
+
+
 ## TODO: add optional instructions
 
