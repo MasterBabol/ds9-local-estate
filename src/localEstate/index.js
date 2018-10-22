@@ -3,6 +3,7 @@ import rocket from './rocket';
 import signal from './signal';
 import technology from './technology';
 import electricity from './electricity';
+import inven from './inven';
 
 const factorioSafeExit = async (leCtx) => {
     try {
@@ -74,6 +75,7 @@ const mainDispatchLoop = async (leCtx) => {
         proms.push(signal.dispatchTxSignals(leCtx));
         proms.push(electricity.dispatchRxElectricity(leCtx));
         proms.push(electricity.dispatchTxElectricity(leCtx));
+        proms.push(inven.dispatchRxInvensigs(leCtx));
         if ((leCtx.dispatchPeriodIdx % leCtx.config['techsync-period']) == 0) {
             proms.push(technology.dispatchResearchAnnounces(leCtx));
             proms.push(technology.dispatchResearchUpdates(leCtx));

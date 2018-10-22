@@ -53,7 +53,7 @@ const dispatchRxqueue = async (leCtx) => {
                             delete items[itemName]; // delete invalid requests
                     }
                     if (Object.keys(items).length > 0) {
-                        let res = await ds9.inventory(leCtx.config, commitItems);
+                        let res = await ds9.inventory.put(leCtx.config, commitItems);
 
                         if (!res.error && (res.response.statusCode == 200)) {
                             await leCtx.rcon.send('/confirm_rx_reservation ' + JSON.stringify(rxReq));
@@ -79,7 +79,7 @@ const dispatchRxqueue = async (leCtx) => {
                             delete items[itemName];
                     }
                     if (Object.keys(items).length > 0) {
-                        let res = await ds9.inventory(leCtx.config, items);
+                        let res = await ds9.inventory.put(leCtx.config, items);
 
                         if (res.error || (res.response.statusCode != 200)) {
                             let reason;
@@ -122,7 +122,7 @@ const dispatchTxqueue = async (leCtx) => {
     mergeInventory(itemsQuery, prevFailedTx);
 
     if (Object.keys(itemsQuery).length > 0) {
-        let res = await ds9.inventory(leCtx.config, itemsQuery);
+        let res = await ds9.inventory.put(leCtx.config, itemsQuery);
 
         if (!res.error && (res.response.statusCode == 200)) {
             db.set('failed-tx-inv', {}).write();
