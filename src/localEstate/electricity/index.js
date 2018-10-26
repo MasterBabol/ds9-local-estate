@@ -12,7 +12,7 @@ const dispatchRxElectricity = async (leCtx) => {
     }
 
     if (reqRxElecQuery['electricity-in-mj'] < 0) {
-        let res = await ds9.inventory(leCtx.config, reqRxElecQuery, true);
+        let res = await ds9.inventory.get(leCtx.config, reqRxElecQuery, true);
 
         if (!res.error && (res.response.statusCode == 200)) {
             let ret = res.body;
@@ -53,7 +53,7 @@ const dispatchTxElectricity = async (leCtx) => {
     txElecsQuery['electricity-in-mj'] += prevFailedElec.value();
 
     if (txElecsQuery['electricity-in-mj'] > 0) {
-        let res = await ds9.inventory(leCtx.config, txElecsQuery);
+        let res = await ds9.inventory.get(leCtx.config, txElecsQuery);
 
         if (!res.error && (res.response.statusCode == 200)) {
             db.set('failed-tx-elec', 0).write();
