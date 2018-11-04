@@ -9,7 +9,7 @@ const factorioSafeExit = async (leCtx) => {
     try {
         console.log('[!] Attempting to save the game..');
         let msg = await leCtx.rcon.send('/server_save manualsave');
-        await leCtx.rcon.send('/c');
+        await leCtx.rcon.send('/silent-command');
         console.log('[+] ' + msg);
         console.log('[!] Good bye.');
         process.exit(0);
